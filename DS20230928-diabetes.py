@@ -18,33 +18,119 @@ diabetes.describe()
 print(diabetes.isnull().sum())
 
 # get total number of rows
-print("Total number of rows : {0}".format(len(diabetes[diabetes['SkinThickness'] == 0])))
+totalRows = len(diabetes)
+print("Total number of rows : {0}".format(len(diabetes)))
+
+# check how many 0 value in each column
+clucoseMissingNumber = len(diabetes[diabetes['Glucose'] == 0])
+print("Glucose Missing number: {0}".format(clucoseMissingNumber))
+print("Glucose Missing percentage: {0}".format(clucoseMissingNumber/totalRows))
+
+# check how many 0 value in BloodPressure
+BloodPressureMissingNumber = len(diabetes[diabetes['BloodPressure'] == 0])
+print("BloodPressure Missing number: {0}".format(BloodPressureMissingNumber))
+print("BloodPressure Missing percentage: {0}".format(BloodPressureMissingNumber/totalRows))
+
+# check how many 0 value in SkinThickness
+SkinThicknessMissingNumber = len(diabetes[diabetes['SkinThickness'] == 0])
+print("SkinThickness Missing number: {0}".format(SkinThicknessMissingNumber))
+print("SkinThickness Missing percentage: {0}".format(SkinThicknessMissingNumber/totalRows))
+
+# check how many 0 value in Insulin
+InsulinMissingNumber = len(diabetes[diabetes['Insulin'] == 0])
+print("Insulin Missing number: {0}".format(InsulinMissingNumber))
+print("Insulin Missing percentage: {0}".format(InsulinMissingNumber/totalRows))
+
+# check how many 0 value in BMI
+BMIMissingNumber = len(diabetes[diabetes['BMI'] == 0])
+print("BMI Missing number: {0}".format(BMIMissingNumber))
+print("BMI Missing percentage: {0}".format(BMIMissingNumber/totalRows))
 
 
-# check Glucose value is 0
-diabetes[diabetes['Glucose'] == 0]
-# check BloodPressure value is 0
-diabetes[diabetes['BloodPressure'] == 0]
-# check SkinThickness value is 0
-diabetes[diabetes['SkinThickness'] == 0]
-# check Insulin value is 0
-diabetes[diabetes['Insulin'] == 0]
-# check BMI value is 0
-diabetes[diabetes['BMI'] == 0]
+print("SkinThickness Missing number: {0}".format(len(diabetes[diabetes['SkinThickness'] == 0])))
+print("Insulin Missing number: {0}".format(len(diabetes[diabetes['Insulin'] == 0])))
+print("BMI Missing number: {0}".format(len(diabetes[diabetes['BMI'] == 0])))
 
-# remove which value is 0 that row
-diabetes['Glucose'] = diabetes['Glucose'].replace(0, np.NaN)
-diabetes['BloodPressure'] = diabetes['BloodPressure'].replace(0, np.NaN)
-diabetes['SkinThickness'] = diabetes['SkinThickness'].replace(0, np.NaN)
-diabetes['Insulin'] = diabetes['Insulin'].replace(0, np.NaN)
-diabetes['BMI'] = diabetes['BMI'].replace(0, np.NaN)
+# get total number of rows
+print("DiabetesPedigreeFunction Missing number: {0}".format(len(diabetes[diabetes['DiabetesPedigreeFunction'] == 0])))
+
+
 
 # delete all the row which value is NaN
 diabetes.dropna(inplace=True)
 
+# get percentage of missing value
+print("Glucose Missing number: {0}".format(len(diabetes[diabetes['Glucose'] == 0])))
+print("BloodPressure Missing number: {0}".format(len(diabetes[diabetes['BloodPressure'] == 0])))
+print("SkinThickness Missing number: {0}".format(len(diabetes[diabetes['SkinThickness'] == 0])))
+print("Insulin Missing number: {0}".format(len(diabetes[diabetes['Insulin'] == 0])))
+print("BMI Missing number: {0}".format(len(diabetes[diabetes['BMI'] == 0])))
 
-# check number of row again
-print("Total number of rows : {0}".format(len(diabetes)))
+# remove column "Insulin" and "SkinThickness"
+diabetes.drop(['Insulin', 'SkinThickness'], axis=1, inplace=True)
+
+
+# remove all the row which value is 0
+diabetes = diabetes[(diabetes[['Glucose','BloodPressure','BMI']] != 0).all(axis=1)]
+
+
+
+
+# Handling Outliers
+plt.figure(figsize=(12, 5))
+# check outliers
+# Glucose
+plt.subplot(1, 2, 1)  # 1 row, 2 columns, first subplot
+sns.boxplot(y=diabetes['Pregnancies'])
+plt.title('Pregnancies Boxplot')
+
+plt.subplot(1, 2, 2)  # 1 row, 2 columns, second subplot
+sns.countplot(x='Pregnancies', data=diabetes, palette='Set2')
+plt.title('Pregnancies Countplot')
+
+# clean data for pregnancies remove over than 13
+diabetes = diabetes[diabetes['Pregnancies'] < 13]
+
+
+
+# BloodPressure
+sns.boxplot(x=diabetes['BloodPressure'])
+# get outliers number of BloodPressure
+Q1 = diabetes['BloodPressure'].quantile(0.25)
+Q3 = diabetes['BloodPressure'].quantile(0.75)
+IQR = Q3 - Q1
+print("BloodPressure outliers number : {0}".format(len(diabetes[(diabetes['BloodPressure'] < (Q1 - 1.5 * IQR)) | (diabetes['BloodPressure'] > (Q3 + 1.5 * IQR))])))
+
+# BMI
+sns.boxplot(x=diabetes['BMI'])
+# get outliers number of BMI
+Q1 = diabetes['BMI'].quantile(0.25)
+Q3 = diabetes['BMI'].quantile(0.75)
+IQR = Q3 - Q1
+print("BMI outliers number : {0}".format(len(diabetes[(diabetes['BMI'] < (Q1 - 1.5 * IQR)) | (diabetes['BMI'] > (Q3 + 1.5 * IQR))])))
+
+# get quantile 0.75
+diabetes['BMI'].quantile(0.75)
+
+# remove BMI over than quantile 0.75
+diabetes = diabetes[diabetes['BMI'] < 36.5]
+
+
+# age
+sns.boxplot(x=diabetes['Age'])
+# get outliers number of age
+Q1 = diabetes['Age'].quantile(0.25)
+Q3 = diabetes['Age'].quantile(0.75)
+IQR = Q3 - Q1
+print("Age outliers number : {0}".format(len(diabetes[(diabetes['Age'] < (Q1 - 1.5 * IQR)) | (diabetes['Age'] > (Q3 + 1.5 * IQR))])))
+
+
+# remove age over than 41
+diabetes = diabetes[diabetes['Age'] < 41]
+
+# Pregnancies
+sns.boxplot(x=diabetes['Pregnancies'])
+
 
 
 
@@ -131,3 +217,14 @@ sns.countplot(x='Outcome', data=diabetes, palette='Set2')
 sns.heatmap(diabetes.corr(), annot=True, cmap='RdYlGn')
 plt.show()
 
+
+# create a data frame for the labels
+data = diabetes.Dataframe({'X':diabetes['Pregnancies','Glucose','BloodPressure','BMI','DiabetesPedigreeFunction','Age','Outcome'],'Y':{diabetes['Outcome','Age','DiabetesPedigreeFunction','BMI','BloodPressure','Glucose','Pregnancies']}})
+
+
+# create a line plot for the labels
+plt.plot(data['X'], data['Y'], kind='line')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.title('Line Plot')
+plt.show()
