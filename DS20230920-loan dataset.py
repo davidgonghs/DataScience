@@ -117,6 +117,17 @@ data['Property_Area'].replace({'Urban': 0, 'Rural': 1, 'Semiurban': 2}, inplace=
 # Assuming you have a DataFrame named 'data'
 data['Loan_Status'].replace({'Y': 1, 'N': 0}, inplace=True)
 
+# remove ApplicantIncome and CoapplicantIncome column
+data.drop(['ApplicantIncome', 'CoapplicantIncome'], axis=1, inplace=True)
+
+# total rows
+totalRows = data.shape[0]
+
+# get LP001367
+print(data.loc[data['Loan_ID'] == 'LP001367'])
+
+from sklearn.tree import DecisionTreeClassifier
+model = DecisionTreeClassifier()
 
 # Create a heatmap to visualize the correlation matrix
 plt.figure(figsize=(10, 8))
@@ -124,4 +135,16 @@ sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', linewidths=.5)
 plt.title("Correlation Matrix Heatmap")
 plt.show()
 
+from sklearn.metrics import classification_report, confusion_matrix
 
+from sklearn.metrics import accuracy_score
+
+from sklearn.metrics import roc_auc_score
+curve = roc_auc_score(y_test, predictions)
+print(curve)
+
+train_acc = accuracy_score(y_train, model.predict(X_train))
+test_acc = accuracy_score(y_test, model.predict(X_test))
+
+print(train_acc)
+print(test_acc)

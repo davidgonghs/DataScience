@@ -104,3 +104,10 @@ plt.figure(figsize=(10, 8))
 sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', linewidths=.5)
 plt.title("Correlation Matrix Heatmap")
 plt.show()
+
+
+from sklearn.preprocessing import LabelEncoder
+cols = ['Gender','Married','Education','Self_Employed','Credit_History','Property_Area']
+le = LabelEncoder()
+for col in cols:
+    loan[col] = le.fit_transform(loan[col])
